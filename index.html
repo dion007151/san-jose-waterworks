@@ -3,2404 +3,1406 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>San Jose Waterworks | Clean Water for San Jose, Antique</title>
+    <title>Complete Family Animation</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
-        :root {
-            --primary: #0066CC;
-            --primary-dark: #0052A3;
-            --secondary: #00B4D8;
-            --accent: #90E0EF;
-            --water-blue: #CAF0F8;
-            --deep-blue: #0077B6;
-            --ocean: #03045E;
-            --light: #F8F9FA;
-            --dark: #1A1A2E;
-            --gradient-primary: linear-gradient(135deg, var(--primary), var(--secondary));
-            --gradient-water: linear-gradient(135deg, var(--secondary), var(--accent));
-            --gradient-ocean: linear-gradient(135deg, var(--deep-blue), var(--ocean));
-            --shadow: 0 10px 30px rgba(0, 102, 204, 0.15);
-            --shadow-lg: 0 20px 50px rgba(0, 102, 204, 0.25);
-            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
+        
         body {
-            font-family: 'Poppins', sans-serif;
-            color: white;
-            background: var(--dark);
-            overflow-x: hidden;
-            position: relative;
-        }
-
-        /* Water Canvas Background */
-        #waterCanvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -2;
-            background: linear-gradient(180deg, #001233 0%, #001845 30%, #002855 100%);
-        }
-
-        /* Water Surface Effect */
-        .water-surface {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(0deg, rgba(0, 180, 216, 0.1) 0%, rgba(0, 180, 216, 0) 100%);
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        /* Ripple Effect */
-        .ripple {
-            position: absolute;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(0, 180, 216, 0.3) 0%, transparent 70%);
-            transform: scale(0);
-            animation: ripple-animation 2s linear;
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        @keyframes ripple-animation {
-            to {
-                transform: scale(4);
-                opacity: 0;
-            }
-        }
-
-        /* Floating Bubbles */
-        .bubble {
-            position: fixed;
-            border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
-            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.1);
-            z-index: -1;
-            animation: float linear infinite;
-        }
-
-        @keyframes float {
-            0% {
-                transform: translateY(100vh) scale(0);
-                opacity: 0;
-            }
-            10% {
-                opacity: 0.4;
-            }
-            90% {
-                opacity: 0.4;
-            }
-            100% {
-                transform: translateY(-100px) scale(1);
-                opacity: 0;
-            }
-        }
-
-        /* Water Drip Animation */
-        .water-drip {
-            position: fixed;
-            width: 3px;
-            height: 30px;
-            background: linear-gradient(to bottom, transparent, var(--accent));
-            border-radius: 0 0 10px 10px;
-            animation: drip 3s infinite;
-            z-index: -1;
-        }
-
-        @keyframes drip {
-            0% {
-                height: 0;
-                opacity: 1;
-            }
-            80% {
-                height: 30px;
-                opacity: 1;
-            }
-            100% {
-                height: 30px;
-                opacity: 0;
-            }
-        }
-
-        /* Main Container */
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-            position: relative;
-            z-index: 10;
-        }
-
-        /* Glass Morphism Header */
-        header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            z-index: 1000;
-            padding: 15px 0;
-            transition: var(--transition);
-        }
-
-        header.scrolled {
-            background: rgba(26, 26, 46, 0.9);
-            backdrop-filter: blur(30px);
-            padding: 10px 0;
-        }
-
-        .header-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        /* Logo with Water Effect */
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            position: relative;
-        }
-
-        .logo-icon {
-            width: 70px;
-            height: 70px;
-            background: var(--gradient-primary);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 2rem;
-            box-shadow: var(--shadow);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .logo-icon:after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
-            animation: waterShine 4s infinite;
-        }
-
-        @keyframes waterShine {
-            0% { transform: rotate(0deg); opacity: 0; }
-            10% { opacity: 0.5; }
-            100% { transform: rotate(360deg); opacity: 0; }
-        }
-
-        .logo-text h1 {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1.8rem;
-            background: linear-gradient(135deg, white, var(--accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 5px;
-        }
-
-        .logo-text p {
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        /* Navigation */
-        nav ul {
-            display: flex;
-            list-style: none;
-            gap: 30px;
-        }
-
-        nav a {
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 1rem;
-            padding: 8px 0;
-            position: relative;
-            transition: var(--transition);
-        }
-
-        nav a:after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--gradient-water);
-            transition: var(--transition);
-            border-radius: 1px;
-        }
-
-        nav a:hover, nav a.active {
-            color: white;
-        }
-
-        nav a:hover:after, nav a.active:after {
-            width: 100%;
-        }
-
-        /* Auth Buttons */
-        .auth-buttons {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 12px 28px;
-            background: var(--gradient-primary);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 600;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
-            box-shadow: 0 5px 15px rgba(0, 102, 204, 0.3);
-        }
-
-        .btn:before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: var(--gradient-water);
-            transition: all 0.6s ease;
-            z-index: -1;
-        }
-
-        .btn:hover:before {
-            left: 0;
-        }
-
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0, 102, 204, 0.4);
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            box-shadow: none;
-        }
-
-        .btn-outline:hover {
-            border-color: var(--secondary);
-            background: rgba(0, 180, 216, 0.1);
-        }
-
-        /* User Profile */
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-            position: relative;
-            padding: 8px 16px;
-            border-radius: 50px;
-            background: rgba(255, 255, 255, 0.05);
-            transition: var(--transition);
-        }
-
-        .user-profile:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .user-avatar {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            background: var(--gradient-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 700;
-            font-size: 1rem;
-            box-shadow: 0 5px 15px rgba(0, 102, 204, 0.3);
-        }
-
-        .user-dropdown {
-            position: absolute;
-            top: 60px;
-            right: 0;
-            background: rgba(26, 26, 46, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 15px;
-            box-shadow: var(--shadow-lg);
-            width: 220px;
-            padding: 15px 0;
-            display: none;
-            z-index: 100;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .user-dropdown.show {
-            display: block;
-            animation: dropdownFade 0.3s ease;
-        }
-
-        @keyframes dropdownFade {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .user-dropdown a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 20px;
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            transition: var(--transition);
-        }
-
-        .user-dropdown a:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: white;
-            padding-left: 25px;
-        }
-
-        /* Hero Section */
-        .hero {
+            font-family: 'Arial Rounded MT Bold', 'Comic Sans MS', sans-serif;
+            background: linear-gradient(135deg, #ffe6ee, #d6f0ff, #e6fffa);
             min-height: 100vh;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            position: relative;
-            padding: 150px 0 100px;
-            overflow: hidden;
+            justify-content: center;
+            overflow-x: hidden;
+            color: #5a5a5a;
+            padding: 20px;
+            transition: background 1.5s ease;
         }
-
-        .hero-content {
-            max-width: 800px;
-            position: relative;
-            z-index: 10;
+        
+        .night-mode {
+            background: linear-gradient(135deg, #0a2463, #3a0ca3) !important;
         }
-
-        .hero-subtitle {
-            font-size: 1.2rem;
-            color: var(--accent);
-            font-weight: 500;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .hero-subtitle:before {
-            content: '';
-            width: 50px;
-            height: 3px;
-            background: var(--gradient-water);
-            border-radius: 2px;
-        }
-
-        .hero h1 {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 4rem;
-            font-weight: 800;
-            line-height: 1.1;
-            margin-bottom: 2rem;
-            background: linear-gradient(135deg, white, var(--accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 0 10px 30px rgba(0, 180, 216, 0.2);
-        }
-
-        .hero p {
-            font-size: 1.2rem;
-            line-height: 1.8;
-            color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 3rem;
-            max-width: 700px;
-        }
-
-        .hero-btns {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
-        /* Water Flow Animation in Hero */
-        .water-flow {
-            position: absolute;
-            right: -200px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(0, 180, 216, 0.1) 0%, transparent 70%);
-            border-radius: 50%;
-            filter: blur(40px);
-            animation: waterPulse 4s ease-in-out infinite;
-            z-index: 1;
-        }
-
-        @keyframes waterPulse {
-            0%, 100% { transform: translateY(-50%) scale(1); }
-            50% { transform: translateY(-50%) scale(1.1); }
-        }
-
-        /* Water Treatment Plant Visualization */
-        .treatment-plant {
-            position: absolute;
-            right: 100px;
-            bottom: 100px;
-            width: 400px;
-            height: 300px;
-            z-index: 2;
-            display: none;
-        }
-
-        @media (min-width: 1400px) {
-            .treatment-plant {
-                display: block;
-            }
-        }
-
-        .plant-tank {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .plant-water {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: linear-gradient(to top, var(--primary), var(--secondary));
-            animation: waterLevel 3s ease-in-out infinite alternate;
-        }
-
-        @keyframes waterLevel {
-            0% { height: 60%; }
-            100% { height: 80%; }
-        }
-
-        /* Services Section */
-        .services {
-            padding: 120px 0;
-            position: relative;
-        }
-
-        .section-header {
+        
+        .container {
             text-align: center;
-            margin-bottom: 80px;
+            max-width: 1200px;
+            width: 100%;
         }
-
-        .section-header h2 {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            background: linear-gradient(135deg, white, var(--accent));
+        
+        .header {
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            color: #ff6b93;
+            text-shadow: 3px 3px 0 #ffd1e1, 5px 5px 0 rgba(0,0,0,0.1);
+            animation: titleBounce 3s infinite;
+            background: linear-gradient(45deg, #ff6b93, #ff8e53);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
             position: relative;
             display: inline-block;
         }
-
-        .section-header h2:after {
+        
+        h1::after {
             content: '';
             position: absolute;
-            bottom: -15px;
+            bottom: -10px;
+            left: 10%;
+            width: 80%;
+            height: 5px;
+            background: linear-gradient(90deg, transparent, #ff6b93, transparent);
+            border-radius: 50%;
+        }
+        
+        .subtitle {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: #5a5a5a;
+            font-weight: 300;
+        }
+        
+        .date {
+            font-size: 1.2rem;
+            color: #888;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+        
+        .animation-area {
+            width: 100%;
+            height: 550px;
+            position: relative;
+            margin: 30px 0;
+            background: linear-gradient(to bottom, #a2d2ff, #ffafcc, #bde0fe);
+            border-radius: 25px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), inset 0 0 50px rgba(255,255,255,0.5);
+            overflow: hidden;
+            border: 12px solid white;
+            transition: all 1.5s ease;
+        }
+        
+        .night {
+            background: linear-gradient(to bottom, #0a2463, #3a0ca3, #7209b7) !important;
+        }
+        
+        /* Season Styles */
+        .spring { background: linear-gradient(to bottom, #a2d2ff, #ffafcc, #bde0fe) !important; }
+        .summer { background: linear-gradient(to bottom, #4fc3f7, #81d4fa, #b3e5fc) !important; }
+        .autumn { background: linear-gradient(to bottom, #ffb74d, #ffcc80, #ffe0b2) !important; }
+        .winter { background: linear-gradient(to bottom, #bbdefb, #e3f2fd, #f5f5f5) !important; }
+        
+        /* Adventure Backgrounds */
+        .beach { background: linear-gradient(to bottom, #4fc3f7, #81d4fa, #ffecb3) !important; }
+        .park { background: linear-gradient(to bottom, #a2d2ff, #81c784, #c8e6c9) !important; }
+        .space { background: linear-gradient(to bottom, #0d47a1, #311b92, #000051) !important; }
+        
+        .background {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            transition: all 1.5s ease;
+        }
+        
+        .sun {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, #ffeb3b, #ff9800);
+            border-radius: 50%;
+            top: 30px;
+            right: 50px;
+            box-shadow: 0 0 60px #ff9800;
+            animation: sunPulse 4s infinite alternate;
+            z-index: 2;
+            transition: all 1.5s ease;
+        }
+        
+        .moon {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, #e3f2fd, #bbdefb);
+            border-radius: 50%;
+            top: 40px;
+            right: 60px;
+            box-shadow: 0 0 40px #bbdefb;
+            z-index: 2;
+        }
+        
+        .stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+        
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 4s infinite;
+        }
+        
+        .cloud {
+            position: absolute;
+            background: white;
+            border-radius: 50px;
+            opacity: 0.9;
+            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.1));
+        }
+        
+        .cloud-1 {
+            width: 140px;
+            height: 70px;
+            top: 50px;
+            left: 10%;
+            animation: cloudMove 25s linear infinite;
+        }
+        
+        .cloud-2 {
+            width: 170px;
+            height: 80px;
+            top: 100px;
+            left: 40%;
+            animation: cloudMove 30s linear infinite;
+        }
+        
+        .cloud-3 {
+            width: 120px;
+            height: 60px;
+            top: 150px;
+            left: 70%;
+            animation: cloudMove 20s linear infinite;
+        }
+        
+        .grass {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 100px;
+            background: linear-gradient(to top, #8bc34a, #aed581);
+            z-index: 2;
+            box-shadow: 0 -5px 10px rgba(0,0,0,0.1);
+        }
+        
+        .character-container {
+            position: absolute;
+            bottom: 100px;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .mommy-container {
+            left: 20%;
+        }
+        
+        .baby-container {
             left: 50%;
             transform: translateX(-50%);
-            width: 100px;
-            height: 4px;
-            background: var(--gradient-water);
-            border-radius: 2px;
         }
-
-        .section-header p {
-            font-size: 1.1rem;
-            color: rgba(255, 255, 255, 0.7);
-            max-width: 700px;
-            margin: 0 auto;
+        
+        .daddy-container {
+            left: 75%;
         }
-
-        .services-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-        }
-
-        .service-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 40px 30px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
-        }
-
-        .service-card:before {
-            content: '';
+        
+        .floating-heart {
             position: absolute;
+            top: -40px;
+            font-size: 30px;
+            animation: heartFloat 3s infinite ease-in-out;
+            z-index: 11;
+            filter: drop-shadow(0 0 5px rgba(255,255,255,0.7));
+        }
+        
+        .character {
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s;
+            z-index: 10;
+        }
+        
+        .character:hover {
+            transform: translateY(-10px);
+        }
+        
+        /* Natural Movement Animations */
+        .mommy {
+            animation: gentleSway 7s infinite ease-in-out;
+        }
+        
+        .baby {
+            animation: babyBounce 4s infinite ease-in-out;
+        }
+        
+        .daddy {
+            animation: daddySway 6s infinite ease-in-out;
+        }
+        
+        /* Character Styles */
+        .mommy-head {
+            width: 100px;
+            height: 100px;
+            background: #ffcccb;
+            border-radius: 50%;
+            position: relative;
+            margin: 0 auto;
+            border: 3px solid #ff9aa2;
+            z-index: 5;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .mommy-hair {
+            width: 120px;
+            height: 60px;
+            background: #8d6e63;
+            border-radius: 50% 50% 0 0;
+            position: absolute;
+            top: -30px;
+            left: -10px;
+            z-index: 4;
+        }
+        
+        .face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 5px;
-            background: var(--gradient-water);
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: var(--transition);
-            z-index: -1;
+            z-index: 6;
         }
-
-        .service-card:hover:before {
-            transform: scaleX(1);
+        
+        .eye {
+            position: absolute;
+            width: 22px;
+            height: 16px;
+            background: white;
+            border-radius: 50% 50% 70% 70%;
+            top: 32px;
+            border: 2px solid #333;
+            overflow: hidden;
         }
-
-        .service-card:hover {
-            transform: translateY(-15px);
-            box-shadow: var(--shadow-lg);
-            border-color: var(--secondary);
+        
+        .left-eye {
+            left: 20px;
         }
-
-        .service-icon {
+        
+        .right-eye {
+            right: 20px;
+        }
+        
+        .pupil {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #333;
+            border-radius: 50%;
+            top: 2px;
+            left: 5px;
+            animation: naturalBlink 5s infinite;
+        }
+        
+        .mouth {
+            position: absolute;
+            width: 30px;
+            height: 12px;
+            border-bottom: 3px solid #333;
+            border-radius: 0 0 50% 50%;
+            bottom: 22px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        /* Emotion Styles */
+        .happy .mouth {
+            border-bottom: 3px solid #333;
+            border-radius: 50% 50% 0 0;
+            height: 15px;
+        }
+        
+        .surprised .mouth {
+            width: 20px;
+            height: 20px;
+            background: #ff6b93;
+            border-radius: 50%;
+            border: none;
+        }
+        
+        .sad .mouth {
+            border-bottom: none;
+            border-top: 3px solid #333;
+            border-radius: 50% 50% 0 0;
+            height: 15px;
+        }
+        
+        .sleepy .pupil {
+            animation: none;
+            transform: scaleY(0.1);
+        }
+        
+        .blush {
+            position: absolute;
+            width: 20px;
+            height: 10px;
+            background: #ffb6c1;
+            border-radius: 50%;
+            top: 45px;
+            opacity: 0.7;
+        }
+        
+        .blush-left {
+            left: 10px;
+        }
+        
+        .blush-right {
+            right: 10px;
+        }
+        
+        .mommy-body {
+            width: 80px;
+            height: 120px;
+            background: #ff9aa2;
+            border-radius: 40px 40px 0 0;
+            position: relative;
+            margin: 0 auto;
+            top: -5px;
+            z-index: 4;
+            border: 3px solid #ff6b93;
+        }
+        
+        .mommy-dress {
+            width: 100px;
+            height: 80px;
+            background: #ff6b93;
+            border-radius: 50px 50px 0 0;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3;
+        }
+        
+        .arm {
+            width: 20px;
+            height: 70px;
+            background: #ffcccb;
+            position: absolute;
+            top: 30px;
+            border-radius: 10px;
+            z-index: 2;
+        }
+        
+        .mommy-left-arm {
+            left: -15px;
+            transform-origin: top center;
+            animation: gentleArmSway 4s infinite ease-in-out;
+        }
+        
+        .mommy-right-arm {
+            right: -15px;
+            transform-origin: top center;
+            animation: gentleArmSway 4s infinite ease-in-out 0.5s;
+        }
+        
+        .leg {
+            width: 25px;
+            height: 60px;
+            background: #ffcccb;
+            position: absolute;
+            bottom: -60px;
+            border-radius: 10px;
+            z-index: 2;
+        }
+        
+        .mommy-left-leg {
+            left: 15px;
+        }
+        
+        .mommy-right-leg {
+            right: 15px;
+        }
+        
+        /* Baby Character */
+        .baby-head {
             width: 80px;
             height: 80px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 30px;
-            color: var(--accent);
-            font-size: 2.5rem;
+            background: #ffcccb;
+            border-radius: 50%;
             position: relative;
+            margin: 0 auto;
+            border: 3px solid #ff9aa2;
+            z-index: 5;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
             overflow: hidden;
         }
-
-        .service-icon:after {
-            content: '';
+        
+        .baby-hair {
+            width: 90px;
+            height: 40px;
+            background: #5d4037;
+            border-radius: 50% 50% 0 0;
             position: absolute;
-            top: -10px;
-            left: -10px;
-            right: -10px;
-            bottom: -10px;
-            background: radial-gradient(circle, rgba(0, 180, 216, 0.2) 0%, transparent 70%);
-            z-index: -1;
+            top: -20px;
+            left: -5px;
+            z-index: 4;
+        }
+        
+        .baby-eye {
+            position: absolute;
+            width: 20px;
+            height: 18px;
+            background: white;
+            border-radius: 50% 50% 70% 70%;
+            top: 28px;
+            border: 2px solid #333;
+            overflow: hidden;
+        }
+        
+        .baby-left-eye {
+            left: 16px;
+        }
+        
+        .baby-right-eye {
+            right: 16px;
+        }
+        
+        .baby-pupil {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #333;
+            border-radius: 50%;
+            top: 4px;
+            left: 5px;
+            animation: naturalBlink 4s infinite;
+        }
+        
+        .baby-mouth {
+            position: absolute;
+            width: 20px;
+            height: 8px;
+            border-bottom: 3px solid #333;
+            border-radius: 0 0 50% 50%;
+            bottom: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .baby-blush {
+            position: absolute;
+            width: 16px;
+            height: 8px;
+            background: #ffb6c1;
+            border-radius: 50%;
+            top: 42px;
+            opacity: 0.7;
+        }
+        
+        .baby-blush-left {
+            left: 8px;
+        }
+        
+        .baby-blush-right {
+            right: 8px;
+        }
+        
+        .baby-body {
+            width: 70px;
+            height: 90px;
+            background: #a2d2ff;
+            border-radius: 35px 35px 0 0;
+            position: relative;
+            margin: 0 auto;
+            top: -5px;
+            z-index: 4;
+            border: 3px solid #89c2ff;
+        }
+        
+        .baby-onesie {
+            width: 80px;
+            height: 60px;
+            background: #89c2ff;
+            border-radius: 40px 40px 0 0;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3;
+        }
+        
+        .baby-left-arm {
+            left: -15px;
+            transform-origin: top center;
+            animation: babyArmSway 3s infinite ease-in-out;
+        }
+        
+        .baby-right-arm {
+            right: -15px;
+            transform-origin: top center;
+            animation: babyArmSway 3s infinite ease-in-out 0.4s;
+        }
+        
+        .baby-left-leg {
+            left: 10px;
+        }
+        
+        .baby-right-leg {
+            right: 10px;
+        }
+        
+        /* Daddy Character */
+        .daddy-head {
+            width: 100px;
+            height: 100px;
+            background: #ffcccb;
+            border-radius: 50%;
+            position: relative;
+            margin: 0 auto;
+            border: 3px solid #ff9aa2;
+            z-index: 5;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .daddy-hair {
+            width: 110px;
+            height: 50px;
+            background: #5d4037;
+            border-radius: 50% 50% 0 0;
+            position: absolute;
+            top: -25px;
+            left: -5px;
+            z-index: 4;
+        }
+        
+        .daddy-eye {
+            position: absolute;
+            width: 20px;
+            height: 14px;
+            background: white;
+            border-radius: 50% 50% 70% 70%;
+            top: 35px;
+            border: 2px solid #333;
+            overflow: hidden;
+        }
+        
+        .daddy-left-eye {
+            left: 22px;
+        }
+        
+        .daddy-right-eye {
+            right: 22px;
+        }
+        
+        .daddy-pupil {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #333;
+            border-radius: 50%;
+            top: 2px;
+            left: 5px;
+            animation: naturalBlink 6s infinite;
+        }
+        
+        .daddy-mouth {
+            position: absolute;
+            width: 28px;
+            height: 8px;
+            border-bottom: 3px solid #333;
+            border-radius: 0 0 50% 50%;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .daddy-body {
+            width: 85px;
+            height: 130px;
+            background: #90caf9;
+            border-radius: 42px 42px 0 0;
+            position: relative;
+            margin: 0 auto;
+            top: -5px;
+            z-index: 4;
+            border: 3px solid #64b5f6;
+        }
+        
+        .daddy-shirt {
+            width: 95px;
+            height: 85px;
+            background: #64b5f6;
+            border-radius: 47px 47px 0 0;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3;
+        }
+        
+        .daddy-left-arm {
+            left: -17px;
+            transform-origin: top center;
+            animation: daddyArmSway 5s infinite ease-in-out;
+        }
+        
+        .daddy-right-arm {
+            right: -17px;
+            transform-origin: top center;
+            animation: daddyArmSway 5s infinite ease-in-out 0.6s;
+        }
+        
+        .daddy-left-leg {
+            left: 17px;
+        }
+        
+        .daddy-right-leg {
+            right: 17px;
+        }
+        
+        /* Fixed Message Positioning */
+        .message {
+            position: absolute;
+            background: white;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 1rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             opacity: 0;
-            transition: var(--transition);
+            z-index: 20;
+            max-width: 150px;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
         }
-
-        .service-card:hover .service-icon:after {
-            opacity: 1;
+        
+        .mommy-message {
+            animation: messagePop 6s infinite;
         }
-
-        .service-card h3 {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1.5rem;
-            margin-bottom: 15px;
-            color: white;
+        
+        .baby-message {
+            animation: messagePop 6s infinite 2s;
         }
-
-        .service-card p {
-            color: rgba(255, 255, 255, 0.7);
-            line-height: 1.7;
-            margin-bottom: 25px;
+        
+        .daddy-message {
+            animation: messagePop 6s infinite 4s;
         }
-
-        /* Water Quality Section */
-        .water-quality {
-            padding: 120px 0;
-            position: relative;
-            background: radial-gradient(circle at 50% 50%, rgba(0, 180, 216, 0.05) 0%, transparent 50%);
-        }
-
-        .quality-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 40px;
-        }
-
-        .quality-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 40px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .quality-meter {
-            height: 12px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 6px;
-            margin: 25px 0;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .quality-meter:after {
-            content: '';
+        
+        .story-box {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            animation: meterShine 3s infinite;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            background: rgba(255,255,255,0.9);
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            z-index: 25;
+            font-size: 1.1rem;
+            border: 2px dashed #ff6b93;
         }
-
-        @keyframes meterShine {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-
-        .quality-level {
-            height: 100%;
-            border-radius: 6px;
-            background: var(--gradient-water);
-            width: 98%;
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* Auth Modals */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            backdrop-filter: blur(10px);
-        }
-
-        .modal-overlay.show {
+        
+        .controls {
+            margin-top: 30px;
             display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
         }
-
-        .modal {
-            background: rgba(26, 26, 46, 0.95);
-            backdrop-filter: blur(30px);
-            border-radius: 20px;
-            width: 90%;
-            max-width: 500px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            overflow: hidden;
-            animation: modalSlideIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 10px;
         }
-
-        @keyframes modalSlideIn {
-            from { opacity: 0; transform: translateY(-50px) scale(0.9); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
+        
+        .control-group h3 {
+            margin-bottom: 10px;
+            color: #ff6b93;
+            font-size: 1.2rem;
         }
-
-        .modal-header {
-            padding: 30px;
-            background: var(--gradient-ocean);
-            position: relative;
+        
+        .emotion-controls, .season-controls, .adventure-controls, .basic-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
-
-        .modal-header h3 {
+        
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(to bottom, #ff6b93, #ff8e53);
             color: white;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1.8rem;
+            font-family: inherit;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
             font-weight: 600;
         }
-
-        .close-modal {
-            position: absolute;
-            top: 25px;
-            right: 25px;
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        
+        button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
         }
-
-        .close-modal:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: rotate(90deg);
+        
+        .emotion-btn {
+            background: linear-gradient(to bottom, #ba68c8, #8e24aa);
         }
-
-        .modal-body {
-            padding: 40px 30px 30px;
+        
+        .season-btn {
+            background: linear-gradient(to bottom, #4db6ac, #00695c);
         }
-
-        .form-group {
-            margin-bottom: 25px;
+        
+        .adventure-btn {
+            background: linear-gradient(to bottom, #ffb74d, #f57c00);
         }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 10px;
-            color: rgba(255, 255, 255, 0.8);
-            font-weight: 500;
+        
+        .basic-btn {
+            background: linear-gradient(to bottom, #64b5f6, #1976d2);
         }
-
-        .form-control {
-            width: 100%;
-            padding: 16px 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            color: white;
-            font-family: 'Poppins', sans-serif;
-            font-size: 1rem;
-            transition: var(--transition);
+        
+        .active {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(255,255,255,0.7);
         }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--secondary);
-            background: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.1);
-        }
-
-        .auth-divider {
+        
+        .footer {
+            margin-top: 30px;
+            font-size: 1.1rem;
+            color: #777;
             text-align: center;
-            margin: 30px 0;
-            position: relative;
+            max-width: 80%;
+            line-height: 1.5;
         }
-
-        .auth-divider:before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.2), transparent);
+        
+        /* Natural Movement Animations */
+        @keyframes gentleSway {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-5px) rotate(0.5deg); }
+            50% { transform: translateY(-2px) rotate(-0.5deg); }
+            75% { transform: translateY(-4px) rotate(0.3deg); }
         }
-
-        .auth-divider span {
-            background: rgba(26, 26, 46, 0.95);
-            padding: 0 20px;
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 0.9rem;
+        
+        @keyframes babyBounce {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-8px) rotate(1deg); }
+            50% { transform: translateY(-3px) rotate(-1deg); }
+            75% { transform: translateY(-10px) rotate(0.5deg); }
         }
-
-        .social-auth {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 30px;
+        
+        @keyframes daddySway {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-3px) rotate(0.3deg); }
+            50% { transform: translateY(-1px) rotate(-0.3deg); }
+            75% { transform: translateY(-4px) rotate(0.2deg); }
         }
-
-        .social-btn {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            padding: 16px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            color: white;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
+        
+        @keyframes gentleArmSway {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(5deg); }
+            50% { transform: rotate(-3deg); }
+            75% { transform: rotate(7deg); }
         }
-
-        .social-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: var(--secondary);
-            transform: translateY(-3px);
+        
+        @keyframes babyArmSway {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(15deg); }
+            50% { transform: rotate(-10deg); }
+            75% { transform: rotate(20deg); }
         }
-
-        .social-btn.google {
-            color: #DB4437;
+        
+        @keyframes daddyArmSway {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(3deg); }
+            50% { transform: rotate(-2deg); }
+            75% { transform: rotate(5deg); }
         }
-
-        .social-btn.facebook {
-            color: #4267B2;
+        
+        @keyframes naturalBlink {
+            0%, 96% { transform: scaleY(1); }
+            97% { transform: scaleY(0.1); }
+            98% { transform: scaleY(1); }
+            99% { transform: scaleY(0.1); }
+            100% { transform: scaleY(1); }
         }
-
-        /* Footer */
-        footer {
-            padding: 100px 0 40px;
-            position: relative;
-            background: linear-gradient(180deg, transparent 0%, rgba(0, 23, 61, 0.5) 100%);
+        
+        @keyframes heartFloat {
+            0%, 100% { transform: translateY(0) scale(1); opacity: 0.7; }
+            50% { transform: translateY(-20px) scale(1.1); opacity: 1; }
         }
-
-        .footer-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 50px;
-            margin-bottom: 60px;
+        
+        @keyframes messagePop {
+            0%, 100% { opacity: 0; transform: translateX(-50%) translateY(10px); }
+            20%, 80% { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
-
-        .footer-column h3 {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1.4rem;
-            margin-bottom: 25px;
-            color: white;
-            position: relative;
-            padding-bottom: 15px;
+        
+        @keyframes titleBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
-
-        .footer-column h3:after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 50px;
-            height: 3px;
-            background: var(--gradient-water);
-            border-radius: 2px;
+        
+        @keyframes sunPulse {
+            0% { transform: scale(1); box-shadow: 0 0 60px #ff9800; }
+            100% { transform: scale(1.1); box-shadow: 0 0 80px #ff9800; }
         }
-
-        .footer-column ul {
-            list-style: none;
+        
+        @keyframes cloudMove {
+            0% { transform: translateX(-200px); }
+            100% { transform: translateX(1100px); }
         }
-
-        .footer-column li {
-            margin-bottom: 15px;
-        }
-
-        .footer-column a {
-            color: rgba(255, 255, 255, 0.7);
-            text-decoration: none;
-            transition: var(--transition);
-        }
-
-        .footer-column a:hover {
-            color: white;
-            padding-left: 5px;
-        }
-
-        .contact-info {
-            display: flex;
-            align-items: flex-start;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .contact-info i {
-            color: var(--accent);
-            margin-top: 5px;
-        }
-
-        .copyright {
-            text-align: center;
-            padding-top: 40px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 0.9rem;
-        }
-
-        /* Water Flow Pipe Animation */
-        .water-pipe {
-            position: absolute;
-            width: 100px;
-            height: 20px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .water-flow-pipe {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            animation: pipeFlow 2s linear infinite;
-        }
-
-        @keyframes pipeFlow {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-
-        /* Toast Notifications */
-        .toast {
-            position: fixed;
-            top: 30px;
-            right: 30px;
-            background: rgba(26, 26, 46, 0.95);
-            backdrop-filter: blur(20px);
-            color: white;
-            padding: 20px 25px;
-            border-radius: 15px;
-            box-shadow: var(--shadow-lg);
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            z-index: 3000;
-            border-left: 4px solid var(--secondary);
-            transform: translateX(120%);
-            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            max-width: 400px;
-        }
-
-        .toast.show {
-            transform: translateX(0);
-        }
-
-        .toast-icon {
-            font-size: 1.5rem;
-            color: var(--secondary);
-        }
-
-        /* Dashboard */
-        .dashboard {
-            padding: 150px 0 100px;
-            display: none;
-        }
-
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 50px;
-        }
-
-        .dashboard-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 35px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: var(--transition);
-        }
-
-        .dashboard-card:hover {
-            transform: translateY(-10px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .card-value {
-            font-size: 3rem;
-            font-weight: 700;
-            color: var(--accent);
-            margin: 15px 0;
-        }
-
-        /* Water Usage Visualization */
-        .water-usage {
-            height: 200px;
-            display: flex;
-            align-items: flex-end;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .usage-bar {
-            flex: 1;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px 10px 0 0;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .usage-fill {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: var(--gradient-water);
-            animation: fillAnimation 1.5s ease-out;
-        }
-
-        @keyframes fillAnimation {
-            from { height: 0; }
-            to { height: var(--fill-height); }
-        }
-
-        /* Mobile Menu Button */
-        .mobile-menu-btn {
-            display: none;
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            width: 50px;
-            height: 50px;
-            border-radius: 10px;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .mobile-menu-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        /* Responsive Design */
-        @media (max-width: 1100px) {
-            .hero h1 {
-                font-size: 3.5rem;
-            }
-            
-            .water-flow {
-                right: -300px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .header-container {
-                flex-wrap: wrap;
-            }
-            
-            .mobile-menu-btn {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-            
-            nav ul {
-                display: none;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                width: 100%;
-                background: rgba(26, 26, 46, 0.98);
-                backdrop-filter: blur(30px);
-                flex-direction: column;
-                padding: 20px;
-                gap: 20px;
-                border-top: 1px solid rgba(255, 255, 255, 0.1);
-            }
-            
-            nav ul.show {
-                display: flex;
-            }
-            
-            .auth-buttons {
-                order: 3;
-                width: 100%;
-                justify-content: center;
-                margin-top: 20px;
-                display: none;
-            }
-            
-            .auth-buttons.show {
-                display: flex;
-            }
-            
-            .hero {
-                padding: 120px 0 60px;
-            }
-            
-            .hero h1 {
-                font-size: 2.8rem;
-            }
-            
-            .section-header h2 {
-                font-size: 2.5rem;
-            }
-            
-            .water-flow {
-                display: none;
-            }
-            
-            .social-auth {
-                flex-direction: column;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .hero h1 {
-                font-size: 2.2rem;
-            }
-            
-            .section-header h2 {
-                font-size: 2rem;
-            }
-            
-            .hero-btns {
-                flex-direction: column;
-            }
-            
-            .btn {
-                width: 100%;
-            }
-        }
-
-        /* Utility Classes */
-        .text-center { text-align: center; }
-        .mt-1 { margin-top: 1rem; }
-        .mt-2 { margin-top: 2rem; }
-        .mt-3 { margin-top: 3rem; }
-        .mb-1 { margin-bottom: 1rem; }
-        .mb-2 { margin-bottom: 2rem; }
-        .mb-3 { margin-bottom: 3rem; }
-
-        /* Loading Spinner */
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255, 255, 255, 0.1);
-            border-top: 4px solid var(--secondary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Water Testing Animation */
-        .test-tube {
-            width: 40px;
-            height: 100px;
-            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), transparent);
-            border-radius: 10px 10px 0 0;
-            position: relative;
-            overflow: hidden;
-            margin: 20px auto;
-        }
-
-        .test-water {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: var(--gradient-water);
-            animation: testBubble 2s ease-in-out infinite;
-            border-radius: 10px 10px 0 0;
-        }
-
-        @keyframes testBubble {
-            0%, 100% { height: 60%; }
-            50% { height: 80%; }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
         }
     </style>
 </head>
 <body>
-    <!-- Water Canvas Background -->
-    <canvas id="waterCanvas"></canvas>
-    <div class="water-surface"></div>
-    
-    <!-- Floating Bubbles Container -->
-    <div id="bubblesContainer"></div>
-    
-    <!-- Water Drips Container -->
-    <div id="waterDrips"></div>
-
-    <!-- Header -->
-    <header id="mainHeader">
-        <div class="container header-container">
-            <div class="logo">
-                <div class="logo-icon">
-                    <i class="fas fa-tint"></i>
-                </div>
-                <div class="logo-text">
-                    <h1>San Jose Waterworks</h1>
-                    <p>Municipality of San Jose, Antique | Since 1975</p>
-                </div>
-            </div>
-            
-            <button class="mobile-menu-btn" id="mobileMenuBtn">
-                <i class="fas fa-bars"></i>
-            </button>
-            
-            <nav>
-                <ul id="mainNav">
-                    <li><a href="#home" class="active">Home</a></li>
-                    <li><a href="#services">Services</a></li>
-                    <li><a href="#quality">Water Quality</a></li>
-                    <li><a href="#dashboard" id="dashboardNav">Dashboard</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                </ul>
-            </nav>
-            
-            <div class="auth-buttons" id="authButtons">
-                <div id="userProfile" class="user-profile" style="display: none;">
-                    <div class="user-avatar" id="userAvatar">?</div>
-                    <span id="userName">Guest</span>
-                    <div class="user-dropdown" id="userDropdown">
-                        <a href="#" id="dashboardLink"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-                        <a href="#" id="billsLink"><i class="fas fa-file-invoice-dollar"></i> My Bills</a>
-                        <a href="#" id="usageLink"><i class="fas fa-chart-bar"></i> Water Usage</a>
-                        <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
-                    </div>
-                </div>
-                <button class="btn" id="loginBtn">
-                    <i class="fas fa-sign-in-alt"></i> Login
-                </button>
-                <button class="btn btn-outline" id="signupBtn">
-                    <i class="fas fa-user-plus"></i> Sign Up
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <!-- Hero Section -->
-    <section class="hero" id="home">
-        <div class="water-flow"></div>
-        
-        <!-- Water Treatment Plant Visualization -->
-        <div class="treatment-plant">
-            <div class="plant-tank" style="width: 100px; height: 200px; left: 0; top: 50px;">
-                <div class="plant-water" style="animation-delay: 0s;"></div>
-            </div>
-            <div class="plant-tank" style="width: 120px; height: 180px; left: 120px; top: 70px;">
-                <div class="plant-water" style="animation-delay: 0.5s;"></div>
-            </div>
-            <div class="plant-tank" style="width: 100px; height: 220px; left: 260px; top: 40px;">
-                <div class="plant-water" style="animation-delay: 1s;"></div>
-            </div>
-            
-            <!-- Water Pipes -->
-            <div class="water-pipe" style="left: 100px; top: 250px; transform: rotate(45deg);">
-                <div class="water-flow-pipe"></div>
-            </div>
-            <div class="water-pipe" style="left: 220px; top: 250px; transform: rotate(-45deg);">
-                <div class="water-flow-pipe"></div>
-            </div>
+    <div class="container">
+        <div class="header">
+            <h1>Baby Dio, Mommy Emaren & Daddy Dion</h1>
+            <p class="subtitle">Complete Family Animation with All Features</p>
+            <p class="date">Made with Love 💖</p>
         </div>
         
-        <div class="container">
-            <div class="hero-content">
-                <div class="hero-subtitle">Government of Antique Province</div>
-                <h1>Pure Water.<br>Healthy Community.<br>Sustainable Future.</h1>
-                <p>Providing safe, reliable drinking water to over 28 barangays in San Jose, Antique. Our advanced water treatment facility ensures every drop meets the highest quality standards.</p>
-                <div class="hero-btns">
-                    <button class="btn" id="heroPayBtn">
-                        <i class="fas fa-file-invoice-dollar"></i> Pay Water Bill
-                    </button>
-                    <button class="btn btn-outline" id="heroQualityBtn">
-                        <i class="fas fa-vial"></i> Water Quality Report
-                    </button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Services Section -->
-    <section class="services" id="services">
-        <div class="container">
-            <div class="section-header">
-                <h2>Our Water Services</h2>
-                <p>Comprehensive water management solutions for residential, commercial, and industrial needs</p>
+        <div class="animation-area" id="animationArea">
+            <div class="background">
+                <div class="sun" id="sun"></div>
+                <div class="moon" id="moon" style="display: none;"></div>
+                <div class="stars" id="starsContainer"></div>
+                <div class="cloud cloud-1"></div>
+                <div class="cloud cloud-2"></div>
+                <div class="cloud cloud-3"></div>
+                
+                <!-- Adventure Elements -->
+                <div class="adventure-element palm-tree" style="display: none;">🌴</div>
+                <div class="adventure-element swing" style="display: none;">🪆</div>
+                <div class="adventure-element rocket" style="display: none;">🚀</div>
+                
+                <div class="grass"></div>
             </div>
             
-            <div class="services-grid">
-                <div class="service-card">
-                    <div class="service-icon">
-                        <i class="fas fa-file-invoice-dollar"></i>
+            <!-- Mommy Character -->
+            <div class="character-container mommy-container">
+                <div class="floating-heart">💖</div>
+                <div class="character mommy">
+                    <div class="mommy-hair"></div>
+                    <div class="mommy-head">
+                        <div class="face">
+                            <div class="eye left-eye">
+                                <div class="pupil"></div>
+                            </div>
+                            <div class="eye right-eye">
+                                <div class="pupil"></div>
+                            </div>
+                            <div class="blush blush-left"></div>
+                            <div class="blush blush-right"></div>
+                            <div class="mouth"></div>
+                        </div>
                     </div>
-                    <h3>Online Bill Payment</h3>
-                    <p>Pay your water bills securely through our online portal. Multiple payment options available including credit cards and e-wallets.</p>
-                    <button class="btn btn-outline mt-2" id="payServiceBtn">
-                        <i class="fas fa-lock"></i> Pay Now
-                    </button>
-                </div>
-                
-                <div class="service-card">
-                    <div class="service-icon">
-                        <i class="fas fa-wrench"></i>
+                    <div class="mommy-body">
+                        <div class="arm mommy-left-arm"></div>
+                        <div class="arm mommy-right-arm"></div>
+                        <div class="mommy-dress"></div>
+                        <div class="leg mommy-left-leg"></div>
+                        <div class="leg mommy-right-leg"></div>
                     </div>
-                    <h3>New Connection</h3>
-                    <p>Apply for new water service connection online. Track your application status and receive updates via email.</p>
-                    <button class="btn btn-outline mt-2" id="connectionServiceBtn">
-                        <i class="fas fa-lock"></i> Apply Now
-                    </button>
+                    <div class="message mommy-message">I love you both! 💕</div>
                 </div>
-                
-                <div class="service-card">
-                    <div class="service-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <h3>Usage Monitoring</h3>
-                    <p>Track your water consumption in real-time. Set usage alerts and view historical data with interactive charts.</p>
-                    <button class="btn btn-outline mt-2" id="usageServiceBtn">
-                        <i class="fas fa-lock"></i> View Usage
-                    </button>
-                </div>
-                
-                <div class="service-card">
-                    <div class="service-icon">
-                        <i class="fas fa-exclamation-triangle"></i>
-                    </div>
-                    <h3>Issue Reporting</h3>
-                    <p>Report water leaks, quality issues, or service interruptions. Track resolution progress in real-time.</p>
-                    <button class="btn btn-outline mt-2" id="reportServiceBtn">
-                        <i class="fas fa-lock"></i> Report Issue
-                    </button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Water Quality Section -->
-    <section class="water-quality" id="quality">
-        <div class="container">
-            <div class="section-header">
-                <h2>Water Quality & Safety</h2>
-                <p>Regular testing ensures our water exceeds Philippine National Standards for Drinking Water</p>
             </div>
             
-            <div class="quality-grid">
-                <div class="quality-card">
-                    <h3><i class="fas fa-vial"></i> Latest Test Results</h3>
-                    <p><strong>Test Date:</strong> June 25, 2023</p>
-                    <p><strong>Overall Quality:</strong> Excellent</p>
-                    
-                    <!-- Water Quality Meter -->
-                    <div class="quality-meter">
-                        <div class="quality-level"></div>
+            <!-- Baby Character -->
+            <div class="character-container baby-container">
+                <div class="floating-heart">💖</div>
+                <div class="character baby">
+                    <div class="baby-hair"></div>
+                    <div class="baby-head">
+                        <div class="face">
+                            <div class="baby-eye baby-left-eye">
+                                <div class="baby-pupil"></div>
+                            </div>
+                            <div class="baby-eye baby-right-eye">
+                                <div class="baby-pupil"></div>
+                            </div>
+                            <div class="baby-blush baby-blush-left"></div>
+                            <div class="baby-blush baby-blush-right"></div>
+                            <div class="baby-mouth"></div>
+                        </div>
                     </div>
-                    
-                    <!-- Water Testing Visualization -->
-                    <div class="test-tube">
-                        <div class="test-water"></div>
+                    <div class="baby-body">
+                        <div class="arm baby-left-arm"></div>
+                        <div class="arm baby-right-arm"></div>
+                        <div class="baby-onesie"></div>
+                        <div class="leg baby-left-leg"></div>
+                        <div class="leg baby-right-leg"></div>
                     </div>
-                    
-                    <ul style="list-style: none; margin-top: 25px;">
-                        <li><i class="fas fa-check-circle" style="color: #2ECC71; margin-right: 10px;"></i> <strong>pH Level:</strong> 7.2 (Ideal: 6.5-8.5)</li>
-                        <li><i class="fas fa-check-circle" style="color: #2ECC71; margin-right: 10px;"></i> <strong>Chlorine:</strong> 0.8 mg/L (Safe: 0.2-1.0)</li>
-                        <li><i class="fas fa-check-circle" style="color: #2ECC71; margin-right: 10px;"></i> <strong>Turbidity:</strong> 0.3 NTU (Safe: <5 NTU)</li>
-                        <li><i class="fas fa-check-circle" style="color: #2ECC71; margin-right: 10px;"></i> <strong>Coliform Bacteria:</strong> 0 MPN/100mL (Safe: 0)</li>
-                    </ul>
+                    <div class="message baby-message">Mommy! Daddy! 👶💖</div>
                 </div>
-                
-                <div class="quality-card">
-                    <h3><i class="fas fa-filter"></i> Water Treatment Process</h3>
-                    <p>Our advanced 6-step treatment process:</p>
-                    
-                    <ol style="margin: 20px 0 20px 20px; line-height: 2;">
-                        <li><strong>Intake & Screening</strong> - River water collection</li>
-                        <li><strong>Coagulation & Flocculation</strong> - Particle removal</li>
-                        <li><strong>Sedimentation</strong> - Settling of particles</li>
-                        <li><strong>Filtration</strong> - Multi-layer filtration</li>
-                        <li><strong>Disinfection</strong> - Chlorination & UV treatment</li>
-                        <li><strong>Storage & Distribution</strong> - Clean water storage</li>
-                    </ol>
-                    
-                    <p><strong>Daily Capacity:</strong> 15 Million Liters</p>
-                    <p><strong>Source Protection:</strong> 5 Protected Watershed Areas</p>
-                    
-                    <button class="btn mt-2" id="downloadReportBtn">
-                        <i class="fas fa-download"></i> Download Full Report
-                    </button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Dashboard Section -->
-    <section class="dashboard" id="dashboard">
-        <div class="container">
-            <div class="section-header">
-                <h2>My Water Dashboard</h2>
-                <p>Welcome back! Manage your water account and track your consumption</p>
             </div>
             
-            <div class="dashboard-grid">
-                <div class="dashboard-card">
-                    <h3><i class="fas fa-file-invoice-dollar"></i> Current Bill</h3>
-                    <div class="card-value">₱ 1,245.50</div>
-                    <p><strong>Due Date:</strong> July 15, 2023</p>
-                    <p><strong>Consumption:</strong> 35 m³ (Last 30 days)</p>
-                    <button class="btn mt-2" style="width: 100%;">
-                        <i class="fas fa-credit-card"></i> Pay Now
-                    </button>
-                </div>
-                
-                <div class="dashboard-card">
-                    <h3><i class="fas fa-chart-bar"></i> Water Usage</h3>
-                    
-                    <!-- Water Usage Visualization -->
-                    <div class="water-usage">
-                        <div class="usage-bar">
-                            <div class="usage-fill" style="height: 60%;"></div>
-                        </div>
-                        <div class="usage-bar">
-                            <div class="usage-fill" style="height: 80%;"></div>
-                        </div>
-                        <div class="usage-bar">
-                            <div class="usage-fill" style="height: 45%;"></div>
-                        </div>
-                        <div class="usage-bar">
-                            <div class="usage-fill" style="height: 95%;"></div>
+            <!-- Daddy Character -->
+            <div class="character-container daddy-container">
+                <div class="floating-heart">💖</div>
+                <div class="character daddy">
+                    <div class="daddy-hair"></div>
+                    <div class="daddy-head">
+                        <div class="face">
+                            <div class="daddy-eye daddy-left-eye">
+                                <div class="daddy-pupil"></div>
+                            </div>
+                            <div class="daddy-eye daddy-right-eye">
+                                <div class="daddy-pupil"></div>
+                            </div>
+                            <div class="daddy-mouth"></div>
                         </div>
                     </div>
-                    
-                    <p class="mt-2"><strong>Current Month:</strong> 25 m³</p>
-                    <p><strong>Average Daily:</strong> 0.83 m³</p>
+                    <div class="daddy-body">
+                        <div class="arm daddy-left-arm"></div>
+                        <div class="arm daddy-right-arm"></div>
+                        <div class="daddy-shirt"></div>
+                        <div class="leg daddy-left-leg"></div>
+                        <div class="leg daddy-right-leg"></div>
+                    </div>
+                    <div class="message daddy-message">My wonderful family! 👨‍👩‍👦</div>
                 </div>
-                
-                <div class="dashboard-card">
-                    <h3><i class="fas fa-tachometer-alt"></i> Account Status</h3>
-                    <div class="card-value" style="color: #2ECC71;">Active</div>
-                    <p><strong>Account #:</strong> SJW-2023-05842</p>
-                    <p><strong>Connection Date:</strong> January 15, 2020</p>
-                    <p><strong>Last Payment:</strong> June 10, 2023</p>
-                    <button class="btn btn-outline mt-2" style="width: 100%;">
-                        <i class="fas fa-cog"></i> Account Settings
+            </div>
+            
+            <div class="story-box" id="storyBox">
+                Once upon a time, in a magical land, Mommy Emaren, Daddy Dion and Baby Dio shared endless love and laughter...
+            </div>
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <h3>Basic Controls</h3>
+                <div class="basic-controls">
+                    <button class="basic-btn" id="playBtn">
+                        <i class="fas fa-music"></i> Play Music
+                    </button>
+                    <button class="basic-btn" id="hugBtn">
+                        <i class="fas fa-child"></i> Family Hug
+                    </button>
+                    <button class="basic-btn" id="danceBtn">
+                        <i class="fas fa-child"></i> Family Dance
+                    </button>
+                    <button class="basic-btn" id="nightBtn">
+                        <i class="fas fa-moon"></i> Day/Night
+                    </button>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <h3>Emotions</h3>
+                <div class="emotion-controls">
+                    <button class="emotion-btn" id="happyBtn">
+                        <i class="fas fa-laugh"></i> Happy
+                    </button>
+                    <button class="emotion-btn" id="surprisedBtn">
+                        <i class="fas fa-surprise"></i> Surprised
+                    </button>
+                    <button class="emotion-btn" id="sadBtn">
+                        <i class="fas fa-sad-tear"></i> Sad
+                    </button>
+                    <button class="emotion-btn" id="sleepyBtn">
+                        <i class="fas fa-bed"></i> Sleepy
+                    </button>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <h3>Seasons</h3>
+                <div class="season-controls">
+                    <button class="season-btn" id="springBtn">
+                        <i class="fas fa-seedling"></i> Spring
+                    </button>
+                    <button class="season-btn" id="summerBtn">
+                        <i class="fas fa-sun"></i> Summer
+                    </button>
+                    <button class="season-btn" id="autumnBtn">
+                        <i class="fas fa-leaf"></i> Autumn
+                    </button>
+                    <button class="season-btn" id="winterBtn">
+                        <i class="fas fa-snowflake"></i> Winter
+                    </button>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <h3>Adventures</h3>
+                <div class="adventure-controls">
+                    <button class="adventure-btn" id="beachBtn">
+                        <i class="fas fa-umbrella-beach"></i> Beach
+                    </button>
+                    <button class="adventure-btn" id="parkBtn">
+                        <i class="fas fa-tree"></i> Park
+                    </button>
+                    <button class="adventure-btn" id="spaceBtn">
+                        <i class="fas fa-rocket"></i> Space
+                    </button>
+                    <button class="adventure-btn" id="homeBtn">
+                        <i class="fas fa-home"></i> Home
                     </button>
                 </div>
             </div>
         </div>
-    </section>
-
-    <!-- Authentication Modals -->
-    <div class="modal-overlay" id="loginModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3>Welcome Back</h3>
-                <button class="close-modal" id="closeLoginModal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="social-auth">
-                    <button class="social-btn google" id="googleLoginBtn">
-                        <i class="fab fa-google"></i> Continue with Google
-                    </button>
-                    <button class="social-btn facebook" id="facebookLoginBtn">
-                        <i class="fab fa-facebook-f"></i> Continue with Facebook
-                    </button>
-                </div>
-                
-                <div class="auth-divider">
-                    <span>or login with email</span>
-                </div>
-                
-                <form id="loginForm">
-                    <div class="form-group">
-                        <label for="loginEmail">Email Address</label>
-                        <input type="email" id="loginEmail" class="form-control" placeholder="your.email@example.com" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="loginPassword">Password</label>
-                        <input type="password" id="loginPassword" class="form-control" placeholder="Enter your password" required>
-                    </div>
-                    
-                    <button type="submit" class="btn" style="width: 100%;">
-                        <i class="fas fa-sign-in-alt"></i> Login to Account
-                    </button>
-                </form>
-                
-                <div class="form-footer" style="text-align: center; margin-top: 25px;">
-                    <p style="color: rgba(255, 255, 255, 0.7);">Don't have an account? <a href="#" id="showSignupFromLogin" style="color: var(--accent);">Create one now</a></p>
-                </div>
-            </div>
+        
+        <div class="footer">
+            Click on the characters to see them bounce! • Change emotions, seasons, and go on adventures! • Made with love for Baby Dio, Mommy Emaren and Daddy Dion
         </div>
     </div>
-
-    <div class="modal-overlay" id="signupModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3>Create New Account</h3>
-                <button class="close-modal" id="closeSignupModal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="social-auth">
-                    <button class="social-btn google" id="googleSignupBtn">
-                        <i class="fab fa-google"></i> Sign up with Google
-                    </button>
-                    <button class="social-btn facebook" id="facebookSignupBtn">
-                        <i class="fab fa-facebook-f"></i> Sign up with Facebook
-                    </button>
-                </div>
-                
-                <div class="auth-divider">
-                    <span>or sign up with email</span>
-                </div>
-                
-                <form id="signupForm">
-                    <div class="form-group">
-                        <label for="signupName">Full Name</label>
-                        <input type="text" id="signupName" class="form-control" placeholder="Juan Dela Cruz" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="signupEmail">Email Address</label>
-                        <input type="email" id="signupEmail" class="form-control" placeholder="your.email@example.com" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="signupPassword">Create Password</label>
-                        <input type="password" id="signupPassword" class="form-control" placeholder="At least 6 characters" required minlength="6">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="signupConfirmPassword">Confirm Password</label>
-                        <input type="password" id="signupConfirmPassword" class="form-control" placeholder="Re-enter your password" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="accountNumber">Water Account Number (Optional)</label>
-                        <input type="text" id="accountNumber" class="form-control" placeholder="SJW-XXXX-XXXXX">
-                        <small style="color: rgba(255, 255, 255, 0.5); display: block; margin-top: 5px;">Link your existing water account</small>
-                    </div>
-                    
-                    <button type="submit" class="btn" style="width: 100%;">
-                        <i class="fas fa-user-plus"></i> Create Account
-                    </button>
-                </form>
-                
-                <div class="form-footer" style="text-align: center; margin-top: 25px;">
-                    <p style="color: rgba(255, 255, 255, 0.7);">Already have an account? <a href="#" id="showLoginFromSignup" style="color: var(--accent);">Login here</a></p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Footer -->
-    <footer id="contact">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-column">
-                    <h3>San Jose Waterworks</h3>
-                    <p style="color: rgba(255, 255, 255, 0.7);">Providing clean and safe water to the residents of San Jose, Antique since 1975.</p>
-                    <div class="contact-info">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <div style="color: rgba(255, 255, 255, 0.7);">San Jose Waterworks Office, Poblacion, San Jose, Antique 5700</div>
-                    </div>
-                    <div class="contact-info">
-                        <i class="fas fa-phone"></i>
-                        <div style="color: rgba(255, 255, 255, 0.7);">(036) 543-2100 | Emergency: (036) 543-2199</div>
-                    </div>
-                    <div class="contact-info">
-                        <i class="fas fa-envelope"></i>
-                        <div style="color: rgba(255, 255, 255, 0.7);">info@sanjosewaterworks.gov.ph</div>
-                    </div>
-                </div>
-                
-                <div class="footer-column">
-                    <h3>Quick Links</h3>
-                    <ul>
-                        <li><a href="#home">Home</a></li>
-                        <li><a href="#services">Services</a></li>
-                        <li><a href="#quality">Water Quality</a></li>
-                        <li><a href="#dashboard">Dashboard</a></li>
-                        <li><a href="#contact">Contact Us</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-column">
-                    <h3>Office Hours</h3>
-                    <ul>
-                        <li><strong style="color: white;">Monday-Friday:</strong> 8:00 AM - 5:00 PM</li>
-                        <li><strong style="color: white;">Saturday:</strong> 8:00 AM - 12:00 PM</li>
-                        <li><strong style="color: white;">Emergency Hotline:</strong> 24/7 Available</li>
-                        <li><strong style="color: white;">Online Services:</strong> 24/7 Access</li>
-                    </ul>
-                    
-                    <h3 style="margin-top: 30px;">Connect With Us</h3>
-                    <div style="display: flex; gap: 15px; margin-top: 15px;">
-                        <a href="#" style="color: rgba(255, 255, 255, 0.7); font-size: 1.2rem;"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" style="color: rgba(255, 255, 255, 0.7); font-size: 1.2rem;"><i class="fab fa-twitter"></i></a>
-                        <a href="#" style="color: rgba(255, 255, 255, 0.7); font-size: 1.2rem;"><i class="fab fa-youtube"></i></a>
-                        <a href="#" style="color: rgba(255, 255, 255, 0.7); font-size: 1.2rem;"><i class="fab fa-instagram"></i></a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="copyright">
-                <p>&copy; 2023 San Jose Waterworks System. All rights reserved. | Municipality of San Jose, Antique, Philippines</p>
-                <p style="margin-top: 10px; font-size: 0.8rem;">Secure authentication powered by Firebase</p>
-            </div>
-        </div>
-    </footer>
 
     <script>
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyA9oY0qLk7I8Y2rqXq5Q5jK5vJ6L8m9n0o",
-            authDomain: "sanjose-waterworks.firebaseapp.com",
-            projectId: "sanjose-waterworks",
-            storageBucket: "sanjose-waterworks.appspot.com",
-            messagingSenderId: "123456789012",
-            appId: "1:123456789012:web:abc123def456ghi789jkl"
-        };
-
-        // Initialize Firebase
-        let auth;
-        try {
-            firebase.initializeApp(firebaseConfig);
-            auth = firebase.auth();
-            console.log("Firebase initialized successfully");
-        } catch (error) {
-            console.log("Firebase initialization error:", error);
-            // For demo purposes, we'll create a mock auth object
-            auth = {
-                onAuthStateChanged: (callback) => {
-                    // Demo user state
-                    setTimeout(() => callback(null), 100);
-                },
-                signInWithEmailAndPassword: () => Promise.reject(new Error("Demo mode")),
-                createUserWithEmailAndPassword: () => Promise.reject(new Error("Demo mode")),
-                signOut: () => Promise.resolve()
-            };
-        }
-        
-        // DOM Elements
-        const loginBtn = document.getElementById('loginBtn');
-        const signupBtn = document.getElementById('signupBtn');
-        const loginModal = document.getElementById('loginModal');
-        const signupModal = document.getElementById('signupModal');
-        const closeLoginModal = document.getElementById('closeLoginModal');
-        const closeSignupModal = document.getElementById('closeSignupModal');
-        const showSignupFromLogin = document.getElementById('showSignupFromLogin');
-        const showLoginFromSignup = document.getElementById('showLoginFromSignup');
-        const loginForm = document.getElementById('loginForm');
-        const signupForm = document.getElementById('signupForm');
-        const googleLoginBtn = document.getElementById('googleLoginBtn');
-        const googleSignupBtn = document.getElementById('googleSignupBtn');
-        const facebookLoginBtn = document.getElementById('facebookLoginBtn');
-        const facebookSignupBtn = document.getElementById('facebookSignupBtn');
-        const userProfile = document.getElementById('userProfile');
-        const userAvatar = document.getElementById('userAvatar');
-        const userName = document.getElementById('userName');
-        const userDropdown = document.getElementById('userDropdown');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-        const mainNav = document.getElementById('mainNav');
-        const authButtons = document.getElementById('authButtons');
-        const dashboardSection = document.getElementById('dashboard');
-        const dashboardNav = document.getElementById('dashboardNav');
-        
-        // Service buttons
-        const heroPayBtn = document.getElementById('heroPayBtn');
-        const heroQualityBtn = document.getElementById('heroQualityBtn');
-        const payServiceBtn = document.getElementById('payServiceBtn');
-        const connectionServiceBtn = document.getElementById('connectionServiceBtn');
-        const usageServiceBtn = document.getElementById('usageServiceBtn');
-        const reportServiceBtn = document.getElementById('reportServiceBtn');
-        const downloadReportBtn = document.getElementById('downloadReportBtn');
-        
-        // User state
-        let currentUser = null;
-        
-        // Water Canvas Animation
-        function initWaterCanvas() {
-            const canvas = document.getElementById('waterCanvas');
-            const ctx = canvas.getContext('2d');
+        document.addEventListener('DOMContentLoaded', function() {
+            const animationArea = document.getElementById('animationArea');
+            const storyBox = document.getElementById('storyBox');
+            const starsContainer = document.getElementById('starsContainer');
+            const sun = document.getElementById('sun');
+            const moon = document.getElementById('moon');
+            const characterContainers = document.querySelectorAll('.character-container');
             
-            // Set canvas size
-            function resizeCanvas() {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-            }
+            // All control buttons
+            const playBtn = document.getElementById('playBtn');
+            const hugBtn = document.getElementById('hugBtn');
+            const danceBtn = document.getElementById('danceBtn');
+            const nightBtn = document.getElementById('nightBtn');
             
-            resizeCanvas();
-            window.addEventListener('resize', resizeCanvas);
+            // Emotion buttons
+            const happyBtn = document.getElementById('happyBtn');
+            const surprisedBtn = document.getElementById('surprisedBtn');
+            const sadBtn = document.getElementById('sadBtn');
+            const sleepyBtn = document.getElementById('sleepyBtn');
             
-            // Water particles
-            const particles = [];
-            const particleCount = 100;
+            // Season buttons
+            const springBtn = document.getElementById('springBtn');
+            const summerBtn = document.getElementById('summerBtn');
+            const autumnBtn = document.getElementById('autumnBtn');
+            const winterBtn = document.getElementById('winterBtn');
             
-            class Particle {
-                constructor() {
-                    this.x = Math.random() * canvas.width;
-                    this.y = Math.random() * canvas.height;
-                    this.size = Math.random() * 3 + 1;
-                    this.speedX = Math.random() * 0.5 - 0.25;
-                    this.speedY = Math.random() * 0.5 - 0.25;
-                    this.color = `rgba(0, 180, 216, ${Math.random() * 0.3 + 0.1})`;
-                }
-                
-                update() {
-                    this.x += this.speedX;
-                    this.y += this.speedY;
+            // Adventure buttons
+            const beachBtn = document.getElementById('beachBtn');
+            const parkBtn = document.getElementById('parkBtn');
+            const spaceBtn = document.getElementById('spaceBtn');
+            const homeBtn = document.getElementById('homeBtn');
+            
+            let isPlaying = false;
+            let isNight = false;
+            let currentEmotion = 'happy';
+            let currentSeason = 'spring';
+            let currentAdventure = 'home';
+            let audioContext;
+            let oscillator;
+            
+            // Create stars for night mode
+            function createStars() {
+                starsContainer.innerHTML = '';
+                for (let i = 0; i < 100; i++) {
+                    const star = document.createElement('div');
+                    star.classList.add('star');
                     
-                    // Wrap around edges
-                    if (this.x > canvas.width) this.x = 0;
-                    if (this.x < 0) this.x = canvas.width;
-                    if (this.y > canvas.height) this.y = 0;
-                    if (this.y < 0) this.y = canvas.height;
-                }
-                
-                draw() {
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                    ctx.fillStyle = this.color;
-                    ctx.fill();
+                    const size = Math.random() * 3 + 1;
+                    star.style.width = `${size}px`;
+                    star.style.height = `${size}px`;
                     
-                    // Add glow effect
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size * 2, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(0, 180, 216, 0.05)`;
-                    ctx.fill();
+                    star.style.left = `${Math.random() * 100}%`;
+                    star.style.top = `${Math.random() * 70}%`;
+                    
+                    star.style.animationDelay = `${Math.random() * 4}s`;
+                    
+                    starsContainer.appendChild(star);
                 }
             }
             
-            // Create particles
-            for (let i = 0; i < particleCount; i++) {
-                particles.push(new Particle());
-            }
-            
-            // Animation loop
-            function animate() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // Toggle day/night mode
+            function toggleDayNight() {
+                isNight = !isNight;
                 
-                // Draw gradient background
-                const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-                gradient.addColorStop(0, '#001233');
-                gradient.addColorStop(0.5, '#001845');
-                gradient.addColorStop(1, '#002855');
-                ctx.fillStyle = gradient;
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                
-                // Update and draw particles
-                particles.forEach(particle => {
-                    particle.update();
-                    particle.draw();
-                });
-                
-                // Add subtle water surface effect
-                ctx.fillStyle = 'rgba(0, 180, 216, 0.02)';
-                for (let i = 0; i < canvas.width; i += 20) {
-                    const height = Math.sin(Date.now() / 1000 + i * 0.01) * 10 + 20;
-                    ctx.fillRect(i, canvas.height - height, 20, height);
-                }
-                
-                requestAnimationFrame(animate);
-            }
-            
-            animate();
-        }
-        
-        // Create floating bubbles
-        function createBubbles() {
-            const container = document.getElementById('bubblesContainer');
-            const bubbleCount = 30;
-            
-            for (let i = 0; i < bubbleCount; i++) {
-                const bubble = document.createElement('div');
-                bubble.classList.add('bubble');
-                
-                // Random properties
-                const size = Math.random() * 80 + 20;
-                const left = Math.random() * 100;
-                const duration = Math.random() * 20 + 10;
-                const delay = Math.random() * 5;
-                
-                bubble.style.width = `${size}px`;
-                bubble.style.height = `${size}px`;
-                bubble.style.left = `${left}%`;
-                bubble.style.animationDuration = `${duration}s`;
-                bubble.style.animationDelay = `${delay}s`;
-                bubble.style.opacity = Math.random() * 0.4 + 0.1;
-                
-                container.appendChild(bubble);
-            }
-        }
-        
-        // Create water drips
-        function createWaterDrips() {
-            const container = document.getElementById('waterDrips');
-            const dripCount = 5;
-            
-            for (let i = 0; i < dripCount; i++) {
-                const drip = document.createElement('div');
-                drip.classList.add('water-drip');
-                
-                // Random properties
-                const left = Math.random() * 100;
-                const delay = Math.random() * 3;
-                const duration = Math.random() * 2 + 2;
-                
-                drip.style.left = `${left}%`;
-                drip.style.animationDelay = `${delay}s`;
-                drip.style.animationDuration = `${duration}s`;
-                drip.style.top = `${Math.random() * 50 + 10}%`;
-                
-                container.appendChild(drip);
-            }
-        }
-        
-        // Create ripple effects
-        function createRipple(x, y) {
-            const ripple = document.createElement('div');
-            ripple.classList.add('ripple');
-            
-            ripple.style.left = `${x}px`;
-            ripple.style.top = `${y}px`;
-            ripple.style.width = '50px';
-            ripple.style.height = '50px';
-            
-            document.body.appendChild(ripple);
-            
-            // Remove after animation
-            setTimeout(() => {
-                ripple.remove();
-            }, 2000);
-        }
-        
-        // Add ripple effects on click
-        document.addEventListener('click', (e) => {
-            createRipple(e.clientX, e.clientY);
-        });
-        
-        // Toast notification system
-        function showToast(message, type = 'info') {
-            // Remove existing toasts
-            document.querySelectorAll('.toast').forEach(toast => {
-                toast.remove();
-            });
-            
-            // Create toast
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            
-            // Icons for different types
-            const icons = {
-                success: 'check-circle',
-                error: 'exclamation-circle',
-                warning: 'exclamation-triangle',
-                info: 'info-circle'
-            };
-            
-            toast.innerHTML = `
-                <div class="toast-icon">
-                    <i class="fas fa-${icons[type] || 'info-circle'}"></i>
-                </div>
-                <div style="flex: 1;">${message}</div>
-                <button class="toast-close" style="background: none; border: none; color: rgba(255, 255, 255, 0.5); font-size: 1.2rem; cursor: pointer;">&times;</button>
-            `;
-            
-            document.body.appendChild(toast);
-            
-            // Show toast
-            setTimeout(() => {
-                toast.classList.add('show');
-            }, 10);
-            
-            // Close button
-            toast.querySelector('.toast-close').addEventListener('click', () => {
-                toast.classList.remove('show');
-                setTimeout(() => {
-                    if (toast.parentNode) {
-                        toast.remove();
-                    }
-                }, 500);
-            });
-            
-            // Auto remove after 5 seconds
-            setTimeout(() => {
-                if (toast.parentNode) {
-                    toast.classList.remove('show');
-                    setTimeout(() => {
-                        if (toast.parentNode) {
-                            toast.remove();
-                        }
-                    }, 500);
-                }
-            }, 5000);
-        }
-        
-        // Loading spinner
-        function showLoading() {
-            // Remove existing loader
-            document.querySelectorAll('.loader-overlay').forEach(loader => {
-                loader.remove();
-            });
-            
-            // Create loader
-            const loader = document.createElement('div');
-            loader.className = 'loader-overlay';
-            loader.innerHTML = '<div class="spinner"></div>';
-            
-            loader.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0, 0, 0, 0.7);
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                z-index: 4000;
-                backdrop-filter: blur(10px);
-            `;
-            
-            document.body.appendChild(loader);
-        }
-        
-        function hideLoading() {
-            document.querySelectorAll('.loader-overlay').forEach(loader => {
-                loader.remove();
-            });
-        }
-        
-        // Modal functions
-        function showLoginModal() {
-            loginModal.classList.add('show');
-            document.body.style.overflow = 'hidden';
-        }
-        
-        function hideLoginModal() {
-            loginModal.classList.remove('show');
-            document.body.style.overflow = 'auto';
-        }
-        
-        function showSignupModal() {
-            signupModal.classList.add('show');
-            document.body.style.overflow = 'hidden';
-        }
-        
-        function hideSignupModal() {
-            signupModal.classList.remove('show');
-            document.body.style.overflow = 'auto';
-        }
-        
-        // Header scroll effect
-        function initHeaderScroll() {
-            const header = document.getElementById('mainHeader');
-            window.addEventListener('scroll', () => {
-                if (window.scrollY > 50) {
-                    header.classList.add('scrolled');
+                if (isNight) {
+                    animationArea.classList.add('night');
+                    document.body.classList.add('night-mode');
+                    sun.style.display = 'none';
+                    moon.style.display = 'block';
+                    nightBtn.innerHTML = '<i class="fas fa-sun"></i> Switch to Day';
+                    createStars();
                 } else {
-                    header.classList.remove('scrolled');
+                    animationArea.classList.remove('night');
+                    document.body.classList.remove('night-mode');
+                    sun.style.display = 'block';
+                    moon.style.display = 'none';
+                    nightBtn.innerHTML = '<i class="fas fa-moon"></i> Switch to Night';
                 }
-            });
-        }
-        
-        // Firebase authentication functions
-        function loginWithEmail(email, password) {
-            showLoading();
-            
-            // Demo login
-            if (email === 'demo@waterworks.ph' && password === 'demo123') {
-                setTimeout(() => {
-                    const demoUser = {
-                        uid: 'demo-123',
-                        displayName: 'Demo User',
-                        email: 'demo@waterworks.ph'
-                    };
-                    
-                    currentUser = demoUser;
-                    updateUIForUser(demoUser);
-                    hideLoginModal();
-                    showToast('Demo login successful! Welcome.', 'success');
-                    
-                    // Show dashboard
-                    dashboardSection.style.display = 'block';
-                    hideLoading();
-                }, 1500);
-                return;
             }
             
-            auth.signInWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    currentUser = userCredential.user;
-                    updateUIForUser(currentUser);
-                    hideLoginModal();
-                    showToast('Login successful! Welcome back.', 'success');
-                    
-                    // Show dashboard
-                    dashboardSection.style.display = 'block';
-                })
-                .catch((error) => {
-                    console.error('Login error:', error);
-                    let message = 'Login failed. ';
-                    
-                    switch (error.code) {
-                        case 'auth/user-not-found':
-                            message += 'No account found with this email.';
-                            break;
-                        case 'auth/wrong-password':
-                            message += 'Incorrect password.';
-                            break;
-                        case 'auth/invalid-email':
-                            message += 'Invalid email address.';
-                            break;
-                        default:
-                            message += error.message;
-                    }
-                    
-                    showToast(message, 'error');
-                })
-                .finally(() => {
-                    hideLoading();
+            // Change emotion
+            function changeEmotion(emotion) {
+                currentEmotion = emotion;
+                
+                // Remove previous emotion classes
+                characterContainers.forEach(container => {
+                    const character = container.querySelector('.character');
+                    character.classList.remove('happy', 'surprised', 'sad', 'sleepy');
+                    character.classList.add(emotion);
                 });
-        }
-        
-        function signupWithEmail(name, email, password) {
-            showLoading();
-            
-            auth.createUserWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    currentUser = userCredential.user;
-                    
-                    // Update user profile with name
-                    return currentUser.updateProfile({
-                        displayName: name
-                    });
-                })
-                .then(() => {
-                    updateUIForUser(currentUser);
-                    hideSignupModal();
-                    showToast('Account created successfully! Welcome.', 'success');
-                    
-                    // Show dashboard
-                    dashboardSection.style.display = 'block';
-                })
-                .catch((error) => {
-                    console.error('Signup error:', error);
-                    let message = 'Signup failed. ';
-                    
-                    switch (error.code) {
-                        case 'auth/email-already-in-use':
-                            message += 'Email already in use. Try logging in instead.';
-                            break;
-                        case 'auth/weak-password':
-                            message += 'Password is too weak. Use at least 6 characters.';
-                            break;
-                        case 'auth/invalid-email':
-                            message += 'Invalid email address.';
-                            break;
-                        default:
-                            message += error.message;
-                    }
-                    
-                    showToast(message, 'error');
-                })
-                .finally(() => {
-                    hideLoading();
+                
+                // Update active button
+                document.querySelectorAll('.emotion-btn').forEach(btn => {
+                    btn.classList.remove('active');
                 });
-        }
-        
-        function loginWithGoogle() {
-            showLoading();
-            
-            // For demo purposes
-            setTimeout(() => {
-                const demoUser = {
-                    uid: 'google-12345',
-                    displayName: 'Google User',
-                    email: 'googleuser@example.com'
+                event.target.classList.add('active');
+                
+                // Update story based on emotion
+                const emotionStories = {
+                    happy: "The family is so happy together! Laughter fills the air! 😊",
+                    surprised: "Oh! What a wonderful surprise! The family is amazed! 😲",
+                    sad: "Sometimes families feel sad, but they always comfort each other. 😢",
+                    sleepy: "Shhh... the family is getting sleepy. Time for bedtime stories. 😴"
                 };
                 
-                currentUser = demoUser;
-                updateUIForUser(demoUser);
-                hideLoginModal();
-                hideSignupModal();
-                showToast('Google login successful! Welcome.', 'success');
-                
-                // Show dashboard
-                dashboardSection.style.display = 'block';
-                hideLoading();
-            }, 1500);
-        }
-        
-        function loginWithFacebook() {
-            showLoading();
+                storyBox.textContent = emotionStories[emotion];
+            }
             
-            // For demo purposes
-            setTimeout(() => {
-                const demoUser = {
-                    uid: 'facebook-67890',
-                    displayName: 'Facebook User',
-                    email: 'facebookuser@example.com'
+            // Change season
+            function changeSeason(season) {
+                currentSeason = season;
+                
+                // Remove previous season classes
+                animationArea.classList.remove('spring', 'summer', 'autumn', 'winter');
+                animationArea.classList.add(season);
+                
+                // Update active button
+                document.querySelectorAll('.season-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                event.target.classList.add('active');
+                
+                // Update story based on season
+                const seasonStories = {
+                    spring: "Spring has arrived! Flowers are blooming and the family enjoys the fresh air! 🌸",
+                    summer: "Summer is here! The family enjoys warm days and fun in the sun! ☀️",
+                    autumn: "Autumn leaves are falling! The family enjoys cozy moments together! 🍂",
+                    winter: "Winter wonderland! The family stays warm with love and hot cocoa! ⛄"
                 };
                 
-                currentUser = demoUser;
-                updateUIForUser(demoUser);
-                hideLoginModal();
-                hideSignupModal();
-                showToast('Facebook login successful! Welcome.', 'success');
-                
-                // Show dashboard
-                dashboardSection.style.display = 'block';
-                hideLoading();
-            }, 1500);
-        }
-        
-        function logout() {
-            showLoading();
+                storyBox.textContent = seasonStories[season];
+            }
             
-            setTimeout(() => {
-                auth.signOut()
-                    .then(() => {
-                        currentUser = null;
-                        updateUIForUser(null);
-                        showToast('Logged out successfully.', 'success');
-                        
-                        // Hide dashboard
-                        dashboardSection.style.display = 'none';
-                    })
-                    .catch((error) => {
-                        console.error('Logout error:', error);
-                        showToast('Logout failed. Please try again.', 'error');
-                    })
-                    .finally(() => {
-                        hideLoading();
-                    });
-            }, 1000);
-        }
-        
-        // Update UI based on authentication state
-        function updateUIForUser(user) {
-            if (user) {
-                // User is logged in
-                const displayName = user.displayName || user.email || 'User';
-                const initials = displayName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+            // Change adventure
+            function changeAdventure(adventure) {
+                currentAdventure = adventure;
                 
-                userAvatar.textContent = initials;
-                userName.textContent = displayName;
-                userProfile.style.display = 'flex';
-                loginBtn.style.display = 'none';
-                signupBtn.style.display = 'none';
-                
-                // Update service buttons
-                document.querySelectorAll('.btn-outline .fa-lock').forEach(icon => {
-                    icon.className = 'fas fa-arrow-right';
+                // Remove previous adventure classes and hide elements
+                animationArea.classList.remove('beach', 'park', 'space', 'home');
+                document.querySelectorAll('.adventure-element').forEach(el => {
+                    el.style.display = 'none';
                 });
                 
-                // Update dashboard nav visibility
-                dashboardNav.style.display = 'block';
-            } else {
-                // User is logged out
-                userProfile.style.display = 'none';
-                loginBtn.style.display = 'inline-flex';
-                signupBtn.style.display = 'inline-flex';
+                if (adventure !== 'home') {
+                    animationArea.classList.add(adventure);
+                    document.querySelector(`.adventure-element.${adventure === 'beach' ? 'palm-tree' : adventure === 'park' ? 'swing' : 'rocket'}`).style.display = 'block';
+                }
                 
-                // Reset service buttons
-                document.querySelectorAll('.btn-outline .fa-arrow-right').forEach(icon => {
-                    icon.className = 'fas fa-lock';
+                // Update active button
+                document.querySelectorAll('.adventure-btn').forEach(btn => {
+                    btn.classList.remove('active');
                 });
+                event.target.classList.add('active');
                 
-                // Hide dashboard nav
-                dashboardNav.style.display = 'none';
-                dashboardSection.style.display = 'none';
+                // Update story based on adventure
+                const adventureStories = {
+                    beach: "Beach adventure! The family is building sandcastles and splashing in the waves! 🏖️",
+                    park: "Park fun! The family is playing on swings and having a picnic! 🌳",
+                    space: "Space adventure! The family is exploring the stars and planets together! 🚀",
+                    home: "Back home! The family enjoys cozy moments in their favorite place! 🏡"
+                };
+                
+                storyBox.textContent = adventureStories[adventure];
             }
-        }
-        
-        // Handle protected service clicks
-        function handleProtectedServiceClick(serviceName) {
-            if (!currentUser) {
-                showLoginModal();
-                showToast(`Please login to access ${serviceName}.`, 'warning');
-            } else {
-                showToast(`Opening ${serviceName}...`, 'success');
+            
+            // Create a simple lullaby using the Web Audio API
+            function playLullaby() {
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
                 
-                // In a real app, this would redirect to the service
-                setTimeout(() => {
-                    showToast(`${serviceName} page loaded.`, 'success');
-                }, 1000);
-            }
-        }
-        
-        // Event Listeners
-        document.addEventListener('DOMContentLoaded', () => {
-            // Initialize water effects
-            initWaterCanvas();
-            createBubbles();
-            createWaterDrips();
-            initHeaderScroll();
-            
-            // Modal event listeners
-            loginBtn.addEventListener('click', showLoginModal);
-            signupBtn.addEventListener('click', showSignupModal);
-            closeLoginModal.addEventListener('click', hideLoginModal);
-            closeSignupModal.addEventListener('click', hideSignupModal);
-            
-            // Modal switching
-            showSignupFromLogin.addEventListener('click', (e) => {
-                e.preventDefault();
-                hideLoginModal();
-                setTimeout(showSignupModal, 300);
-            });
-            
-            showLoginFromSignup.addEventListener('click', (e) => {
-                e.preventDefault();
-                hideSignupModal();
-                setTimeout(showLoginModal, 300);
-            });
-            
-            // Close modals when clicking outside
-            loginModal.addEventListener('click', (e) => {
-                if (e.target === loginModal) hideLoginModal();
-            });
-            
-            signupModal.addEventListener('click', (e) => {
-                if (e.target === signupModal) hideSignupModal();
-            });
-            
-            // Form submissions
-            loginForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const email = document.getElementById('loginEmail').value;
-                const password = document.getElementById('loginPassword').value;
-                loginWithEmail(email, password);
-            });
-            
-            signupForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const name = document.getElementById('signupName').value;
-                const email = document.getElementById('signupEmail').value;
-                const password = document.getElementById('signupPassword').value;
-                const confirmPassword = document.getElementById('signupConfirmPassword').value;
-                
-                if (password !== confirmPassword) {
-                    showToast('Passwords do not match.', 'error');
+                if (isPlaying) {
+                    // Stop the lullaby
+                    if (oscillator) {
+                        oscillator.stop();
+                    }
+                    isPlaying = false;
+                    playBtn.innerHTML = '<i class="fas fa-music"></i> Play Music';
                     return;
                 }
                 
-                signupWithEmail(name, email, password);
-            });
-            
-            // Social login buttons
-            googleLoginBtn.addEventListener('click', loginWithGoogle);
-            googleSignupBtn.addEventListener('click', loginWithGoogle);
-            facebookLoginBtn.addEventListener('click', loginWithFacebook);
-            facebookSignupBtn.addEventListener('click', loginWithFacebook);
-            
-            // Logout
-            logoutBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                logout();
-            });
-            
-            // User profile dropdown
-            userProfile.addEventListener('click', () => {
-                userDropdown.classList.toggle('show');
-            });
-            
-            // Close dropdown when clicking outside
-            document.addEventListener('click', (e) => {
-                if (!userProfile.contains(e.target)) {
-                    userDropdown.classList.remove('show');
-                }
-            });
-            
-            // Mobile menu
-            mobileMenuBtn.addEventListener('click', () => {
-                mainNav.classList.toggle('show');
-                authButtons.classList.toggle('show');
-                mobileMenuBtn.innerHTML = mainNav.classList.contains('show') 
-                    ? '<i class="fas fa-times"></i>' 
-                    : '<i class="fas fa-bars"></i>';
-            });
-            
-            // Service buttons
-            heroPayBtn.addEventListener('click', () => handleProtectedServiceClick('Bill Payment'));
-            heroQualityBtn.addEventListener('click', () => {
-                showToast('Downloading water quality report...', 'info');
-                setTimeout(() => {
-                    showToast('Report downloaded successfully.', 'success');
-                }, 1500);
-            });
-            
-            payServiceBtn.addEventListener('click', () => handleProtectedServiceClick('Bill Payment'));
-            connectionServiceBtn.addEventListener('click', () => handleProtectedServiceClick('New Connection'));
-            usageServiceBtn.addEventListener('click', () => handleProtectedServiceClick('Usage Monitoring'));
-            reportServiceBtn.addEventListener('click', () => handleProtectedServiceClick('Issue Reporting'));
-            
-            // Download report button
-            downloadReportBtn.addEventListener('click', () => {
-                showToast('Downloading comprehensive water quality report...', 'info');
-                setTimeout(() => {
-                    showToast('Report downloaded successfully.', 'success');
-                }, 1500);
-            });
-            
-            // Smooth scrolling for anchor links
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function(e) {
-                    if (this.getAttribute('href') === '#') return;
-                    
-                    e.preventDefault();
-                    const targetId = this.getAttribute('href');
-                    const targetElement = document.querySelector(targetId);
-                    
-                    if (targetElement) {
-                        // Close mobile menu if open
-                        mainNav.classList.remove('show');
-                        authButtons.classList.remove('show');
-                        mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
-                        
-                        // Close user dropdown
-                        userDropdown.classList.remove('show');
-                        
-                        window.scrollTo({
-                            top: targetElement.offsetTop - 100,
-                            behavior: 'smooth'
-                        });
-                    }
-                });
-            });
-            
-            // Highlight active nav link on scroll
-            window.addEventListener('scroll', () => {
-                const sections = document.querySelectorAll('section[id]');
-                const navLinks = document.querySelectorAll('nav a');
+                // Create oscillator for the lullaby
+                oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
                 
-                let current = '';
-                sections.forEach(section => {
-                    const sectionTop = section.offsetTop;
-                    const sectionHeight = section.clientHeight;
-                    if (window.scrollY >= sectionTop - 150) {
-                        current = section.getAttribute('id');
-                    }
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                // Set a gentle sine wave
+                oscillator.type = 'sine';
+                gainNode.gain.value = 0.1;
+                
+                // Twinkle Twinkle Little Star melody
+                const twinkleNotes = [261.63, 261.63, 392.00, 392.00, 440.00, 440.00, 392.00];
+                
+                let time = audioContext.currentTime;
+                
+                // Play each note
+                twinkleNotes.forEach((frequency, index) => {
+                    oscillator.frequency.setValueAtTime(frequency, time);
+                    time += 0.5;
                 });
                 
-                navLinks.forEach(link => {
-                    link.classList.remove('active');
-                    if (link.getAttribute('href') === `#${current}`) {
-                        link.classList.add('active');
+                oscillator.start();
+                oscillator.stop(time);
+                
+                isPlaying = true;
+                playBtn.innerHTML = '<i class="fas fa-pause"></i> Pause Music';
+                
+                setTimeout(() => {
+                    isPlaying = false;
+                    playBtn.innerHTML = '<i class="fas fa-music"></i> Play Music';
+                }, (twinkleNotes.length * 500) + 100);
+            }
+            
+            // Family hug animation
+            function familyHug() {
+                characterContainers.forEach(container => {
+                    const character = container.querySelector('.character');
+                    character.style.animation = 'none';
+                    
+                    // Move characters closer together temporarily
+                    if (container.classList.contains('mommy-container')) {
+                        container.style.left = '30%';
+                    } else if (container.classList.contains('daddy-container')) {
+                        container.style.left = '65%';
                     }
+                    
+                    // Add bounce effect
+                    character.style.transform = 'translateY(-20px)';
+                    
+                    setTimeout(() => {
+                        character.style.transform = 'translateY(0)';
+                    }, 500);
+                });
+                
+                // Return to original positions after 3 seconds
+                setTimeout(() => {
+                    characterContainers.forEach(container => {
+                        const character = container.querySelector('.character');
+                        if (container.classList.contains('mommy-container')) {
+                            container.style.left = '20%';
+                            character.style.animation = 'gentleSway 7s infinite ease-in-out';
+                        } else if (container.classList.contains('daddy-container')) {
+                            container.style.left = '75%';
+                            character.style.animation = 'daddySway 6s infinite ease-in-out';
+                        } else {
+                            character.style.animation = 'babyBounce 4s infinite ease-in-out';
+                        }
+                    });
+                }, 3000);
+            }
+            
+            // Family dance animation
+            function familyDance() {
+                characterContainers.forEach(container => {
+                    const character = container.querySelector('.character');
+                    character.style.animation = 'none';
+                    
+                    // Add dancing animation
+                    character.style.animation = 'babyBounce 0.5s infinite ease-in-out';
+                    
+                    // Reset after 3 seconds
+                    setTimeout(() => {
+                        if (container.classList.contains('mommy-container')) {
+                            character.style.animation = 'gentleSway 7s infinite ease-in-out';
+                        } else if (container.classList.contains('baby-container')) {
+                            character.style.animation = 'babyBounce 4s infinite ease-in-out';
+                        } else {
+                            character.style.animation = 'daddySway 6s infinite ease-in-out';
+                        }
+                    }, 3000);
+                });
+            }
+            
+            // Initialize
+            createStars();
+            
+            // Set initial active buttons
+            happyBtn.classList.add('active');
+            springBtn.classList.add('active');
+            homeBtn.classList.add('active');
+            
+            // Event listeners for all buttons
+            playBtn.addEventListener('click', playLullaby);
+            hugBtn.addEventListener('click', familyHug);
+            danceBtn.addEventListener('click', familyDance);
+            nightBtn.addEventListener('click', toggleDayNight);
+            
+            // Emotion buttons
+            happyBtn.addEventListener('click', () => changeEmotion('happy'));
+            surprisedBtn.addEventListener('click', () => changeEmotion('surprised'));
+            sadBtn.addEventListener('click', () => changeEmotion('sad'));
+            sleepyBtn.addEventListener('click', () => changeEmotion('sleepy'));
+            
+            // Season buttons
+            springBtn.addEventListener('click', () => changeSeason('spring'));
+            summerBtn.addEventListener('click', () => changeSeason('summer'));
+            autumnBtn.addEventListener('click', () => changeSeason('autumn'));
+            winterBtn.addEventListener('click', () => changeSeason('winter'));
+            
+            // Adventure buttons
+            beachBtn.addEventListener('click', () => changeAdventure('beach'));
+            parkBtn.addEventListener('click', () => changeAdventure('park'));
+            spaceBtn.addEventListener('click', () => changeAdventure('space'));
+            homeBtn.addEventListener('click', () => changeAdventure('home'));
+            
+            // Character click effect
+            characterContainers.forEach(container => {
+                container.addEventListener('click', function() {
+                    const character = this.querySelector('.character');
+                    const heart = this.querySelector('.floating-heart');
+                    
+                    // Bounce effect
+                    character.style.transform = 'translateY(-20px)';
+                    setTimeout(() => {
+                        character.style.transform = '';
+                    }, 300);
+                    
+                    // Heart animation
+                    heart.style.animation = 'none';
+                    setTimeout(() => {
+                        heart.style.animation = 'heartFloat 3s infinite ease-in-out';
+                    }, 10);
                 });
             });
-            
-            // Demo auto-login prompt
-            setTimeout(() => {
-                showToast('Welcome to San Jose Waterworks! Try demo login: demo@waterworks.ph / demo123', 'info');
-            }, 3000);
         });
     </script>
 </body>
